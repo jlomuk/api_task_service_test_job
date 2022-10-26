@@ -1,2 +1,3 @@
 /task_venv/
 .idea
+src/.env
