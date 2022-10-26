@@ -27,7 +27,7 @@ async def get_task(task_id: int, user_id: int, task_crud: TaskCRUD = Depends(Tas
 
 @task_router.post("/",
                   description='Добавление новой задачи',
-                  # response_model=task.TaskResponse,
+                  response_model=task.TaskResponse,
                   status_code=status.HTTP_201_CREATED)
 async def add_task(new_task: task.CreateTaskRequest, task_crud: TaskCRUD = Depends(TaskCRUD)):
     return await task_crud.create(new_task.dict())
@@ -35,6 +35,8 @@ async def add_task(new_task: task.CreateTaskRequest, task_crud: TaskCRUD = Depen
 
 @task_router.delete("/{task_id}",
                     description='Удаление задачи по id',
-                    status_code=status.HTTP_404_NOT_FOUND)
+                    status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(task_id: int, user_id: int, task_crud: TaskCRUD = Depends(TaskCRUD)):
-    return await task_crud.delete(task_id, user_id=user_id)
+    res = await task_crud.delete(task_id, user_id=user_id)
+    if not res:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача не найдена')

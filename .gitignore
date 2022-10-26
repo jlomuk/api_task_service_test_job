@@ -1,3 +1,5 @@
 /task_venv/
 .idea
 src/.env
+/src/htmlcov/
+/src/.coverage

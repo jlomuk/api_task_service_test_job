@@ -44,6 +44,8 @@ class TaskCRUD:
 
     async def delete(self, pk: int, user_id: int):
         statement = delete(self.table). \
-            where(self.table.c.id == pk, self.table.c.user_id == user_id)
+            where(self.table.c.id == pk, self.table.c.user_id == user_id).returning(self.table.c.id)
         async with self.connection.begin() as conn:
-            await conn.execute(statement)
+            result = await conn.execute(statement)
+
+        return result.mappings().first()

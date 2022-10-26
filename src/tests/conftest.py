@@ -70,10 +70,11 @@ async def preparing_for_test():
 async def clear_table():
     for table in meta.tables:
         async with engine.connect() as conn:
+            await conn.execute(text("COMMIT"))
             await conn.execute(text(f"TRUNCATE TABLE {table} RESTART IDENTITY"))
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def test_client():
     with TestClient(app) as client:
         yield client
