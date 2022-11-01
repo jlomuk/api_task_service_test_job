@@ -16,7 +16,6 @@ from fastapi.testclient import TestClient
 from settings import settings
 
 TEST_URL = f"{settings.POSTGRES_URL}_test"
-TEST_DATABASE = 'task_service_test'
 
 engine: AsyncEngine = create_async_engine(TEST_URL + '?prepared_statement_cache_size=0', echo=True, future=True,
                                           poolclass=NullPool)
@@ -28,12 +27,11 @@ async def create_db_if_not_exist():
             pass
 
     except InvalidCatalogNameError:
-        temp_db_url = re.match(r'(^postgresql\S+)/', settings.POSTGRES_URL).group(0)
-        temp_engine = create_async_engine(temp_db_url)
-
+        db_name = re.search(r'(^postgresql\S+)/(\w+)', TEST_URL).group(2)
+        temp_engine = create_async_engine(settings.POSTGRES_URL)
         async with temp_engine.connect() as conn:
             await conn.execute(text("COMMIT"))
-            await conn.execute(text(f"CREATE DATABASE {TEST_DATABASE}"))
+            await conn.execute(text(f"CREATE DATABASE {db_name}"))
 
 
 async def connect_test_db() -> AsyncEngine:

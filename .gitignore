@@ -3,3 +3,4 @@
 src/.env
 /src/htmlcov/
 /src/.coverage
+/ci/.env
