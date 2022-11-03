@@ -1,6 +1,5 @@
 import asyncio
 import re
-import time
 
 import pytest
 import pytest_asyncio
