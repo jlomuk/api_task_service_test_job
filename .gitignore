@@ -4,3 +4,4 @@ src/.env
 /src/htmlcov/
 /src/.coverage
 /ci/.env
+__pycache__
