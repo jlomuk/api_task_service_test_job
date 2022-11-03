@@ -1,6 +1,5 @@
 import asyncio
 import re
-import time
 
 import pytest
 import pytest_asyncio
@@ -16,7 +15,6 @@ from fastapi.testclient import TestClient
 from settings import settings
 
 TEST_URL = f"{settings.POSTGRES_URL}_test"
-TEST_DATABASE = 'task_service_test'
 
 engine: AsyncEngine = create_async_engine(TEST_URL + '?prepared_statement_cache_size=0', echo=True, future=True,
                                           poolclass=NullPool)
@@ -28,12 +26,11 @@ async def create_db_if_not_exist():
             pass
 
     except InvalidCatalogNameError:
-        temp_db_url = re.match(r'(^postgresql\S+)/', settings.POSTGRES_URL).group(0)
-        temp_engine = create_async_engine(temp_db_url)
-
+        db_name = re.search(r'^\W*(postgresql\S+)/(\w+)\W*', TEST_URL).group(2)
+        temp_engine = create_async_engine(settings.POSTGRES_URL)
         async with temp_engine.connect() as conn:
             await conn.execute(text("COMMIT"))
-            await conn.execute(text(f"CREATE DATABASE {TEST_DATABASE}"))
+            await conn.execute(text(f"CREATE DATABASE {db_name}"))
 
 
 async def connect_test_db() -> AsyncEngine:
@@ -70,10 +67,11 @@ async def preparing_for_test():
 async def clear_table():
     for table in meta.tables:
         async with engine.connect() as conn:
+            await conn.execute(text("COMMIT"))
             await conn.execute(text(f"TRUNCATE TABLE {table} RESTART IDENTITY"))
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def test_client():
     with TestClient(app) as client:
         yield client

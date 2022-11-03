@@ -15,7 +15,7 @@ class DeleteTaskRequest(BaseTaskRequest):
 
 class CreateTaskRequest(BaseModel):
     title: str
-    completed: bool
+    completed: bool = False
     user_id: int
     username: str
 
