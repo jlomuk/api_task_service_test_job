@@ -26,7 +26,7 @@ async def create_db_if_not_exist():
             pass
 
     except InvalidCatalogNameError:
-        db_name = re.search(r'(^postgresql\S+)/(\w+)', TEST_URL).group(2)
+        db_name = re.search(r'^\W*(postgresql\S+)/(\w+)\W*', TEST_URL).group(2)
         temp_engine = create_async_engine(settings.POSTGRES_URL)
         async with temp_engine.connect() as conn:
             await conn.execute(text("COMMIT"))
