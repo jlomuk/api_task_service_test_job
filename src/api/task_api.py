@@ -22,7 +22,7 @@ async def get_task(task_id: int, user_id: int, task_crud: TaskCRUD = Depends(Tas
     result = await task_crud.retrieve(pk=task_id, user_id=user_id)
     if result:
         return result
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Задача не найдена')
+    raise HTTPException(status_code=status.HTTP_206_PARTIAL_CONTENT, detail='Задача не найдена')
 
 
 @task_router.post("/",
