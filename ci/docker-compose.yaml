@@ -14,7 +14,6 @@ services:
       context: ../
       dockerfile: ci/Dockerfile
     restart: on-failure
-    command: uvicorn app:app --reload --host ${TASK_SERVICE_HOST} --port ${TASK_SERVICE_PORT}
     depends_on:
       db_task:
         condition: service_healthy
